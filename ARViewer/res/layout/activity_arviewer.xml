@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" >
+
+    <com.parworks.arviewer.OverlayView
+        android:id="@+id/AROverlayViewOld"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" /> 
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/header_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <org.taptwo.android.widget.TitleFlowIndicator
+                android:id="@+id/viewflowindic"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                app:clipPadding="5dp"
+                app:footerColor="#FFFFC445"
+                app:footerLineHeight="2dp"
+                app:footerTriangleHeight="10dp"
+                app:selectedColor="#FFFFC445"
+                app:selectedSize="15dp"
+                app:textColor="#FFFFFFFF"
+                app:textSize="14sp"
+                app:titlePadding="10dp" >
+            </org.taptwo.android.widget.TitleFlowIndicator>
+        </LinearLayout>
+        
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical" >
+        
+        <com.parworks.arviewer.ARImageView
+        android:id="@+id/ARImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />        
+
+        <org.taptwo.android.widget.ViewFlow
+            android:id="@+id/viewflow"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:duplicateParentState="true" >
+        </org.taptwo.android.widget.ViewFlow>
+        
+        </RelativeLayout>
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/shareImageButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:background="#00000000"
+        android:contentDescription="@string/imageButtonInfo"
+        android:scaleType="fitCenter"
+        android:src="@drawable/share" />
+
+</RelativeLayout>

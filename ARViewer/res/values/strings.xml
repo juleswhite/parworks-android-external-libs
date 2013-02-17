@@ -1,0 +1,35 @@
+<resources>
+
+    <string name="app_name">ARViewer</string>
+
+    <string name="errNoCamera">No camera found in this device</string>
+    <string name="loading">Loading...</string>
+    <string name="base_image_load_status_message">Loading base images...</string>
+    <string name="site_load_status_message">Loading sites...</string>
+    <string name="addOverlayDialogRegisterTitle">Add Overlay</string>
+    <string name="addOverlayDialogRegisterMessage"></string>
+    <string name="addOverlayDialogRegisterNegativeButton">Cancel</string>
+    <string name="addOverlayDialogRegisterPositiveButton">Save</string>
+    
+    <string name="imageViewThumbnail">View that displays thumbnail</string>
+    
+    <string name="overlayOpenGLTitle">OpenGL only</string>
+    <string name="overlayWebViewTitle">WebView only</string>
+    <string name="overlayMixedTitle">Mixed (OpenGL + WebView)</string>
+    <string name="overlayOpenGL">OpenGL</string>
+    <string name="overlayWebView">WebView</string>
+    <string name="overlayMixed">Mixed</string>
+    
+    <string name="textViewLoad">Loading…</string>
+    <string name="textViewNetworkUpload">Uploading…</string>
+    <string name="textViewNetworkWait">Waiting…</string>
+    <string name="textViewInfoTitle">Info title:</string>
+    <string name="textViewNetworkDownload">Downloading…</string>
+    <string name="textViewInfo">Info values</string>
+    <string name="textViewLocationTitle">Latitude:\nLongitude:\nAltitude:</string>
+    <string name="textViewLocation">0.000000 \u00b0\n0.000000 \u00b0\n0.000 m</string>
+    <string name="imageButtonCamera">Take a photo with this button</string>
+    <string name="imageButtonInfo">show/hide information</string>
+    <string name="addOverlayButton">show/hide add overlay</string>
+    
+</resources>
