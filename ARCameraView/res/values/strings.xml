@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">ARCameraView</string>
+    
+    <string name="alertDialogRegisterTitle">Image Augmentation</string>
+    <string name="alertDialogRegisterMessage">Do you want to augment this image now?</string>
+    <string name="alertDialogRegisterNegativeButton">No</string>
+    <string name="alertDialogRegisterPositiveButton">Yes</string>
+    <string name="alertDialogBaseUploadTitle">Upload base &amp; image</string>
+    <string name="alertDialogBaseUploadMessage">Do you want to upload this photo as a base image?</string>
+    <string name="alertDialogBaseUploadNegativeButton">No</string>
+    <string name="alertDialogBaseUploadPositiveButton">Yes</string>
+    
+</resources>
