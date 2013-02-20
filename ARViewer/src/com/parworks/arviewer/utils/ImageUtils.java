@@ -3,6 +3,7 @@ package com.parworks.arviewer.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -11,11 +12,15 @@ import java.util.List;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
+import android.os.Environment;
 
 import com.parworks.androidlibrary.ar.BaseImage;
 
 public class ImageUtils {
 
+	private static String filename = Environment.getExternalStorageDirectory()
+			.getAbsolutePath() + "/" + "parworks/tmpimage.jpeg";
+	
 	public static float[] getImageSizeFloat(String filename) {
 		String[] sizeStr = getImageSize(filename).split("x");
 		float[] size = new float[2];
@@ -66,6 +71,18 @@ public class ImageUtils {
 		options.inJustDecodeBounds = false;
 		
 		return BitmapFactory.decodeStream(inputStream, null, options);
+	}
+	
+	public static String saveBitmapAsFile(Bitmap bitmap, String filePath) {
+		String finalPath = (filePath == null) ? filename : filePath;
+	    FileOutputStream out;
+		try {
+			out = new FileOutputStream(finalPath);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+		} catch (FileNotFoundException e) {		
+			e.printStackTrace();
+		}
+		return finalPath;
 	}
 	
 	public static Bitmap decodeSampledBitmapFromFile(String filePath, int sampleSize) throws FileNotFoundException {
