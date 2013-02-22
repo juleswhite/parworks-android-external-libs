@@ -112,10 +112,10 @@ public class OverlayViewFactory {
 	}
 
 	public void createOverlayView(Activity context, OverlayView overlayview,
-			ImageOverlayInfo overlay, float scale, ImageMetrics metrics, boolean showpopup) {
+			ImageOverlayInfo overlay, float xscale, float yscale, ImageMetrics metrics, boolean showpopup) {
 
 		overlayview.setImageMetrics(metrics);
-		overlayview.setOverlayScale(scale);
+		overlayview.setOverlayScale(xscale, yscale);
 
 		// initialize the right overlay view based on the type
 		OverlayViewCreator creator = mCreators.get(

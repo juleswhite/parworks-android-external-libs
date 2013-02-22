@@ -33,7 +33,6 @@ public class OverlayView extends RelativeLayout {
 		public OverlayPopupAnimation(Context context, AttributeSet attrs) {
 			super(context, attrs);
 		}
-
 	}
 
 	public class TransformationAnimation extends Animation {
@@ -52,20 +51,16 @@ public class OverlayView extends RelativeLayout {
 			outTransformation.set(OverlayView.this.getTransformation(child_));
 			return true;
 		}
-
 	}
 
 	public class OverlayTransform extends Transformation {
 
 		private Matrix mMatrix;
 
-		private ImageOverlayInfo mOverlay;
-
 		private float[] mDestination;
 
-		public OverlayTransform(ImageOverlayInfo overlay, float scale, int w,
+		public OverlayTransform(ImageOverlayInfo overlay, float xscale, float yscale, int w,
 				int h, int iw, int ih) {
-			mOverlay = overlay;
 
 			OverlayPoint p1 = overlay.getPoints().get(0);
 			OverlayPoint p2 = overlay.getPoints().get(1);
@@ -84,22 +79,17 @@ public class OverlayView extends RelativeLayout {
 
 			int ydelta = ih / 2;
 			int xdelta = iw / 2;
-			// scale = 1.25f;
 			Matrix matrix2 = new Matrix();
-			float deform2 = 20f;
 			float[] src2 = new float[] { 0, 0, w, 0, w, h, 0, h };
-			float[] dst2 = new float[] { xdelta + p1.getX() * scale,
-					ydelta + p1.getY() * scale, xdelta + p2.getX() * scale,
-					ydelta + p2.getY() * scale, xdelta + p3.getX() * scale,
-					ydelta + p3.getY() * scale, xdelta + p4.getX() * scale,
-					ydelta + p4.getY() * scale };
+			float[] dst2 = new float[] { 
+					xdelta + p1.getX() * xscale,	ydelta + p1.getY() * yscale, 
+					xdelta + p2.getX() * xscale,	ydelta + p2.getY() * yscale, 
+					xdelta + p3.getX() * xscale,	ydelta + p3.getY() * yscale, 
+					xdelta + p4.getX() * xscale,	ydelta + p4.getY() * yscale };
 
 			mDestination = dst2;
-
 			matrix2.setPolyToPoly(src2, 0, dst2, 0, src2.length >> 1);
-
 			mMatrix = matrix2;
-
 		}
 
 		public float[] getDestination() {
@@ -147,7 +137,8 @@ public class OverlayView extends RelativeLayout {
 
 	}
 
-	private float mScale;
+	private float mXScale;
+	private float mYScale;
 
 	private ImageMetrics mImageMetrics;
 
@@ -185,11 +176,12 @@ public class OverlayView extends RelativeLayout {
 	}
 
 	public float getOverlayScale() {
-		return mScale;
+		return mXScale;
 	}
 
-	public void setOverlayScale(float scale) {
-		mScale = scale;
+	public void setOverlayScale(float xscale, float yscale) {
+		mXScale = xscale;
+		mYScale = yscale;
 	}
 
 	public ImageMetrics getImageMetrics() {
@@ -232,13 +224,11 @@ public class OverlayView extends RelativeLayout {
 	}
 
 	public void addOverlay(ImageOverlayInfo overlay, View v,
-			RelativeLayout.LayoutParams params, float scale,
+			RelativeLayout.LayoutParams params, float xscale, float yscale,
 			ImageMetrics metrics) {
-
-		mScale = scale;
-
+		mXScale = xscale;
+		mYScale = yscale;
 		mImageMetrics = metrics;
-
 		addOverlay(overlay, v, params);
 	}
 
@@ -255,25 +245,17 @@ public class OverlayView extends RelativeLayout {
 		mViewOverlays.clear();
 	}
 
-	// protected boolean getChildStaticTransformation(View child, Transformation
-	// t) {
-	// Transformation vt = getTransformation(child);
-	//
-	// if (vt != null) {
-	// t.set(vt);
-	// }
-	//
-	// return vt != null;
-	// }
-
 	protected Transformation getTransformation(View child) {
 		Transformation vt = mTransforms.get(child);
 
 		if (vt == null) {
 			ImageOverlayInfo i = mViewOverlays.get(child);
 			if (i != null) {
-				int[] offs = mImageMetrics.getFullSizeImageOffset();
-				vt = new OverlayTransform(i, mScale, child.getWidth(),
+				int[] offs = new int[]{0, 0}; 
+				if (mImageMetrics != null) {
+					offs = mImageMetrics.getFullSizeImageOffset();
+				}
+				vt = new OverlayTransform(i, mXScale, mYScale, child.getWidth(),
 						child.getHeight(), offs[0], offs[1]);
 				mTransforms.put(child, vt);
 
@@ -294,7 +276,5 @@ public class OverlayView extends RelativeLayout {
 	public boolean onTouchEvent(MotionEvent event) {
 		// TODO Auto-generated method stub
 		return super.onTouchEvent(event);
-
 	}
-
 }

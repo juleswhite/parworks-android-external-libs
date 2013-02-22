@@ -70,7 +70,7 @@ public class OverlayViewAdapter extends BaseAdapter implements TitleProvider {
 		List<ImageOverlayInfo> overlays = mOverlayGroups
 				.getOverlaysForGroup(group);
 		for (ImageOverlayInfo oi : overlays) {
-			mViewFactory.createOverlayView(mViewer, ov, oi, mScale,
+			mViewFactory.createOverlayView(mViewer, ov, oi, mScale, mScale,
 					mImageMetrics, overlays.size() == 1);
 		}
 		

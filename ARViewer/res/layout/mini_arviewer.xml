@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:id="@+id/miniARViewImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        tools:ignore="ContentDescription" />
+
+    <com.parworks.arviewer.OverlayView
+        android:id="@+id/miniAROverlayView"
+        android:layout_alignTop="@id/miniARViewImage"
+    	android:layout_alignBottom="@id/miniARViewImage"
+    	android:layout_width="match_parent" 
+    	android:layout_height="match_parent" /> 
+        
+</RelativeLayout>
