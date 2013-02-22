@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitXY"
+        android:src="@drawable/img_missing_image_78x78"
         tools:ignore="ContentDescription" />
 
     <com.parworks.arviewer.OverlayView

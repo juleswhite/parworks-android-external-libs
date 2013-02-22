@@ -15,6 +15,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationSet;
 import android.view.animation.Transformation;
 import android.widget.RelativeLayout;
@@ -202,12 +203,12 @@ public class OverlayView extends RelativeLayout {
 		//setStaticTransformationsEnabled(true);
 	}
 
-	public void addOverlay(ImageOverlayInfo overlay, View v,
+	public void addOverlay(ImageOverlayInfo overlay, final View v,
 			RelativeLayout.LayoutParams params) {
 		mViewOverlays.put(v, overlay);
-
-		Animation a = new TransformationAnimation(v);
-
+		
+		Animation a = new TransformationAnimation(v);		
+		
 		Animation existing = v.getAnimation();
 		if (existing != null) {
 			if (existing instanceof AnimationSet) {

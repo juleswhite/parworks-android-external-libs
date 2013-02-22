@@ -34,10 +34,14 @@ public class OverlayViewFactory {
 				OverlayView overlayview, ImageOverlayInfo overlay, boolean showpopup) {
 			
 			// setup the boundary
-			ImageView view = new ImageView(context);
+			ImageView view = new ImageView(context);			
 			view.setBackgroundDrawable(new OverlayCoverView(overlay));
 			Animation myFadeInAnimation = AnimationUtils.loadAnimation(context,	R.anim.pulsate);
 			view.startAnimation(myFadeInAnimation);
+			
+			// setting this to be invisible helps to hide the animition process
+			view.setVisibility(View.INVISIBLE); 
+			
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(200, 200);
 			overlayview.addOverlay(overlay, view, params);
 

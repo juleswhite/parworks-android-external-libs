@@ -7,7 +7,6 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,8 +29,7 @@ public class MiniARViewer extends RelativeLayout {
 			
 	private Context context;
 	private ImageView imageView;
-	private Bitmap bitmap;
-	private ImageMetrics imageMetrics;
+	private Bitmap bitmap;	
 	
 	private OverlayView overlayView;
 	private OverlayViewFactory overlayViewFactory;
@@ -71,9 +69,6 @@ public class MiniARViewer extends RelativeLayout {
 	public void setImageBitmap(Bitmap bitmap) {
 		this.bitmap = bitmap;
 		this.imageView.setImageBitmap(bitmap);
-		System.out.println("ImageBitmapSize: " + bitmap.getWidth() + ", " + bitmap.getHeight());
-		imageMetrics = new ImageMetrics((Activity) context, 
-				new Point(bitmap.getWidth(), bitmap.getHeight()));
 	}
 	
 	public void setSize(int width, int height) {		
@@ -132,6 +127,6 @@ public class MiniARViewer extends RelativeLayout {
 		for (ImageOverlayInfo ov : overlays) {
 			overlayViewFactory.createOverlayView((Activity) context, overlayView, ov, 
 					xscale, yscale, null, false);
-		}
+		}		
 	}
 }
