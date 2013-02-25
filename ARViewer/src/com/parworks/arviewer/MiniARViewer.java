@@ -126,7 +126,7 @@ public class MiniARViewer extends RelativeLayout {
 	private void initOverlayView() {
 		for (ImageOverlayInfo ov : overlays) {
 			overlayViewFactory.createOverlayView((Activity) context, overlayView, ov, 
-					xscale, yscale, null, false);
+					xscale, yscale, null, false, overlays.size() < 4);
 		}		
 	}
 }

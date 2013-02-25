@@ -31,13 +31,15 @@ public class OverlayViewFactory {
 		@SuppressWarnings("deprecation")
 		@Override
 		public void createOverlayView(Activity context,
-				OverlayView overlayview, ImageOverlayInfo overlay, boolean showpopup) {
+				OverlayView overlayview, ImageOverlayInfo overlay, boolean showpopup, boolean showFadeAnimation) {
 			
 			// setup the boundary
 			ImageView view = new ImageView(context);			
 			view.setBackgroundDrawable(new OverlayCoverView(overlay));
-			Animation myFadeInAnimation = AnimationUtils.loadAnimation(context,	R.anim.pulsate);
-			view.startAnimation(myFadeInAnimation);
+			if (showFadeAnimation) {
+				Animation myFadeInAnimation = AnimationUtils.loadAnimation(context,	R.anim.pulsate);
+				view.startAnimation(myFadeInAnimation);
+			}
 			
 			// setting this to be invisible helps to hide the animition process
 			view.setVisibility(View.INVISIBLE); 
@@ -67,7 +69,7 @@ public class OverlayViewFactory {
 		@SuppressWarnings("deprecation")
 		@Override
 		public void createOverlayView(Activity context,
-				OverlayView overlayview, ImageOverlayInfo overlay, boolean showpopup) {
+				OverlayView overlayview, ImageOverlayInfo overlay, boolean showpopup, boolean showFadeAnimation) {
 
 			ImageView view = new ImageView(context);
 			view.setAdjustViewBounds(true);
@@ -116,7 +118,8 @@ public class OverlayViewFactory {
 	}
 
 	public void createOverlayView(Activity context, OverlayView overlayview,
-			ImageOverlayInfo overlay, float xscale, float yscale, ImageMetrics metrics, boolean showpopup) {
+			ImageOverlayInfo overlay, float xscale, float yscale, ImageMetrics metrics, 
+			boolean showpopup, boolean showFadeAnimation) {
 
 		overlayview.setImageMetrics(metrics);
 		overlayview.setOverlayScale(xscale, yscale);
@@ -125,7 +128,7 @@ public class OverlayViewFactory {
 		OverlayViewCreator creator = mCreators.get(
 				overlay.getConfiguration().getCover().getOverlayCoverType());
 		if (creator != null) {
-			creator.createOverlayView(context, overlayview, overlay, showpopup);
+			creator.createOverlayView(context, overlayview, overlay, showpopup, showFadeAnimation);
 		}
 	}
 }
