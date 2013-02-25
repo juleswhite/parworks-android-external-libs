@@ -29,7 +29,6 @@ public class MiniARViewer extends RelativeLayout {
 			
 	private Context context;
 	private ImageView imageView;
-	private Bitmap bitmap;	
 	
 	private OverlayView overlayView;
 	private OverlayViewFactory overlayViewFactory;
@@ -67,7 +66,6 @@ public class MiniARViewer extends RelativeLayout {
 	}	
 	
 	public void setImageBitmap(Bitmap bitmap) {
-		this.bitmap = bitmap;
 		this.imageView.setImageBitmap(bitmap);
 	}
 	
@@ -126,7 +124,7 @@ public class MiniARViewer extends RelativeLayout {
 	private void initOverlayView() {
 		for (ImageOverlayInfo ov : overlays) {
 			overlayViewFactory.createOverlayView((Activity) context, overlayView, ov, 
-					xscale, yscale, null, false, overlays.size() < 4);
+					xscale, yscale, null, false, false); // Let's see if we need to enable the fade animation
 		}		
 	}
 }
