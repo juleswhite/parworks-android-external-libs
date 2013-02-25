@@ -448,13 +448,6 @@ public class ARViewerActivity extends SherlockActivity implements View.OnClickLi
 				mode = MODE_NONE;
 				prevTranslate.set(translate);
 
-				System.out.println("ACTIONUP: event: " + event.getX() + ","
-						+ event.getY());
-				System.out.println("ACTIONUP: srcPnt: " + src.x + ","
-						+ src.y);
-				System.out.println("ACTIONUP: dstPnt: " + dst.x + ","
-						+ dst.y);
-
 				break;
 			}
 
