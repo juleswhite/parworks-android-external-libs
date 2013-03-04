@@ -73,7 +73,7 @@ public class OverlayViewFactory {
 
 			ImageView view = new ImageView(context);
 			view.setAdjustViewBounds(true);
-			view.setScaleType(ScaleType.CENTER_CROP);
+			view.setScaleType(ScaleType.FIT_XY);
 			view.setBackgroundDrawable(new OverlayCoverView(overlay));
 			
 			String imgres = overlay.getConfiguration().getCover().getProvider();
