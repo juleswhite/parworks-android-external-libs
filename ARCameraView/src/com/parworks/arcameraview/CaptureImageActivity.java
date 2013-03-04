@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -66,6 +67,8 @@ public class CaptureImageActivity extends SherlockActivity implements
 
 	private static final String TAG = CaptureImageActivity.class.getName();
 
+	private Context mContext;
+	
 	// The attribute name in the intent extra to specify whether to
 	// do augmentation or not
 	public static final String IS_AUGMENT_ATTR = "isAugment";
@@ -84,7 +87,9 @@ public class CaptureImageActivity extends SherlockActivity implements
 	/** Camera related UI */
 	private CameraView mCameraView;
 	private ImageButton mCameraImageButton;
-	private ImageButton mCameraSettingButton;
+	private ImageButton mCameraExitButton;
+	private ImageButton mCameraFlashButton;
+//	private ImageButton mCameraSettingButton;
 
 	/** Camera parameters */
 	private Camera mCamera;
@@ -92,7 +97,7 @@ public class CaptureImageActivity extends SherlockActivity implements
 	private Point prevPictureSize = new Point();
 
 	// Alert Dialog
-	private AlertDialog alertDialog;
+	private AlertDialog alertDialog;	
 
 	// Flags
 	private boolean isCameraViewClicked = false;
@@ -132,6 +137,8 @@ public class CaptureImageActivity extends SherlockActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		mContext = this;
+		
 		// get the target site(s)
 		currentSiteId = getIntent().getExtras().getString(SITE_ID_KEY);
 		currentSiteList = (List<String>) getIntent().getExtras().get(SITE_LIST);
@@ -158,7 +165,7 @@ public class CaptureImageActivity extends SherlockActivity implements
 			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 					WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-			setContentView(R.layout.activity_caputre_image);
+			setContentView(R.layout.activity_capture_image);
 
 			// Get display dimension
 			Display display = getWindowManager().getDefaultDisplay();
@@ -173,10 +180,20 @@ public class CaptureImageActivity extends SherlockActivity implements
 			mCameraImageButton.setOnClickListener(this);
 			mCameraImageButton.setOnTouchListener(this);
 
-			mCameraSettingButton = (ImageButton) findViewById(R.id.imageSetting);
-			mCameraSettingButton.setOnClickListener(this);
+//			mCameraSettingButton = (ImageButton) findViewById(R.id.imageSetting);
+//			mCameraSettingButton.setOnClickListener(this);
+			
+			mCameraExitButton = (ImageButton) findViewById(R.id.imageButtonExit);
+			mCameraExitButton.setOnClickListener(this);
+			
+			mCameraFlashButton = (ImageButton) findViewById(R.id.imageButtonFlash);		
+			mCameraFlashButton.setImageResource(R.drawable.camera_flash_auto_selector);			
+			mCameraFlashButton.setOnClickListener(this);
 
-			this.getSupportActionBar().hide();
+//			this.getSupportActionBar().hide();
+			this.getSupportActionBar().show();
+									
+			mCameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
 			
 			// Initialize camera parameters
 			mCameraView.setCameraParameters(mCameraParameters); // Just passing
@@ -185,6 +202,7 @@ public class CaptureImageActivity extends SherlockActivity implements
 			// parameters,
 			// not updated
 			// yet
+									
 		}
 		
 		// Initialize alert dialog used when augmenting
@@ -428,7 +446,7 @@ public class CaptureImageActivity extends SherlockActivity implements
 	
 			// Enable all the buttons
 			mCameraView = (CameraView) findViewById(R.id.cameraView);
-			mCameraView.setEnabled(true);
+			mCameraView.setEnabled(true);			
 			mCameraImageButton.setEnabled(true);
 			isCameraViewClicked = false;
 			isCameraImageButtonClicked = false;
@@ -451,14 +469,33 @@ public class CaptureImageActivity extends SherlockActivity implements
 			if (mCameraParameters.getFocusMode().compareTo(
 					Camera.Parameters.FOCUS_MODE_INFINITY) != 0)
 				mCameraView.autoFocus(this);
-		} else if (v.getId() == R.id.imageSetting) {
-
-			if (this.getSupportActionBar().isShowing()) {
-				this.getSupportActionBar().hide();
-			} else {
-				this.getSupportActionBar().show();
+		} 
+		else if (v.getId() == R.id.imageButtonExit) {
+			onBackPressed();
+		} 
+		else if (v.getId() == R.id.imageButtonFlash) {
+			if(mCameraView.getFlashMode().equals(Camera.Parameters.FLASH_MODE_ON)){
+				mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+				mCameraFlashButton.setImageResource(R.drawable.camera_flash_off_selector);
 			}
-		} else if (v.getId() == R.id.imageButtonCamera) {
+			else if(mCameraView.getFlashMode().equals(Camera.Parameters.FLASH_MODE_OFF)){
+				mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+				mCameraFlashButton.setImageResource(R.drawable.camera_flash_auto_selector);
+			}
+			else{ 
+				mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+				mCameraFlashButton.setImageResource(R.drawable.camera_flash_on_selector);
+			}
+		}
+//		else if (v.getId() == R.id.imageSetting) {
+//
+//			if (this.getSupportActionBar().isShowing()) {
+//				this.getSupportActionBar().hide();
+//			} else {
+//				this.getSupportActionBar().show();
+//			}
+//		} 
+		else if (v.getId() == R.id.imageButtonCamera) {
 			mCameraView.setEnabled(false);
 			mCameraImageButton.setEnabled(false);
 			isCameraImageButtonClicked = true;
