@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.hardware.Camera;
 import android.location.Location;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -17,6 +18,8 @@ import android.view.WindowManager;
  * @author yusun
  */
 public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
+	
+	public static final String TAG = CameraView.class.getName();
 
 	private SurfaceHolder mSurfaceHolder;
 	private Camera mCamera;
@@ -33,6 +36,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
 	public CameraView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		
 
 		mContext = context;
 
@@ -40,23 +44,36 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 				.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		int rotation = display.getRotation();
+		Log.d(TAG,"Rotation is: " + rotation);
 
 		// If vertical, we fill 2/3 the height and all the width. If horizontal,
 		// fill the entire height and 2/3 the width
 		if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) {
+			Log.d(TAG,"rotation must be either rotatation_0 or rotation_180");
 			screenWidth = display.getWidth();
 			screenHeight = display.getHeight();
+			Log.d(TAG,"screenWidth is: " + screenWidth);
+			Log.d(TAG,"screenHeight is: " + screenHeight);
 			viewHeight = 2 * (screenHeight / 3);
+			Log.d(TAG,"viewHeight is: " + viewHeight);
 			viewWidth = screenWidth;
 		} else {
+			Log.d(TAG,"rotation was something other than 0 or 180");
 			screenWidth = display.getWidth();
 			screenHeight = display.getHeight();
+			Log.d(TAG,"screenWidth is: " + screenWidth);
+			Log.d(TAG,"screenHeight is: " + screenHeight);
 			viewWidth = 2 * (screenWidth / 3);
+			Log.d(TAG,"viewWidth is: " + viewWidth);
 			viewHeight = screenHeight;
 		}
+//		viewWidth = screenWidth;
+//		viewHeight = screenHeight;
 
 		viewWidth = Utilities.getDensityPixels(viewWidth, mContext);
 		viewHeight = Utilities.getDensityPixels(viewHeight, mContext);
+		Log.d(TAG,"viewHeight is: " + viewHeight);
+		Log.d(TAG,"viewWidth is: " + viewWidth);
 		
 		mSurfaceHolder = getHolder();
 		mSurfaceHolder.addCallback(this);
@@ -68,10 +85,10 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceCreated(SurfaceHolder holder) {
 		mCamera = Camera.open();
 		mCamera.setDisplayOrientation(90);
-		
 		if (mCamera != null) {
 			try {
 				mCamera.setPreviewDisplay(holder);
+				Log.d(TAG,"ZOOM LEVEL IS: " + mCamera.getParameters().getZoom());
 			} catch (Exception e) {
 				mCamera.release();
 				mCamera = null;
@@ -89,6 +106,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	public void updateParameter() {
+		Log.d(TAG,"1: UpdateParameter() flash is: " + mCamera.getParameters().getFlashMode());
 		Point pictureSize = mCameraParameters.getPictureSize();
 		int jpegQuality = mCameraParameters.getJpegQuality();
 		String focusMode = mCameraParameters.getFocusMode();
@@ -113,7 +131,9 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 		if (jpegQuality > 0) {
 			params.setJpegQuality(jpegQuality);
 		}
+		
 		mCamera.setParameters(params);
+		Log.d(TAG,"2: UpdateParameter() flash is: " + mCamera.getParameters().getFlashMode());
 	}
 
 	@Override

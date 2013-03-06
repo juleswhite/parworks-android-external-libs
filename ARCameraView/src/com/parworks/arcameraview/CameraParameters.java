@@ -103,7 +103,7 @@ public class CameraParameters {
 	private void updateParameters(Map<String, ?> prefsData) {
 
 		focusMode = (String) prefsData.get("focus-mode");
-		flashMode = (String) prefsData.get("flash-mode");
+	//	flashMode = (String) prefsData.get("flash-mode");
 		whiteBalance = (String) prefsData.get("whitebalance");
 		previewSize = parseSize((String) prefsData.get("preview-size"));
 		thumbnailSize = parseSize((String) prefsData.get("thumbnail-size"));

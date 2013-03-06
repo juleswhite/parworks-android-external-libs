@@ -202,6 +202,8 @@ public class CaptureImageActivity extends SherlockActivity implements
 			// parameters,
 			// not updated
 			// yet
+			
+			
 									
 		}
 		
@@ -450,6 +452,7 @@ public class CaptureImageActivity extends SherlockActivity implements
 			mCameraImageButton.setEnabled(true);
 			isCameraViewClicked = false;
 			isCameraImageButtonClicked = false;
+			
 		}
 	}
 
@@ -457,6 +460,21 @@ public class CaptureImageActivity extends SherlockActivity implements
 	public void onPause() {
 		super.onPause();
 		mEditor.commit();
+	}
+	
+	private void handleFlashButtonChange() {
+		if(mCameraView.getFlashMode().equals(Camera.Parameters.FLASH_MODE_ON)){
+			mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+			mCameraFlashButton.setImageResource(R.drawable.camera_flash_off_selector);
+		}
+		else if(mCameraView.getFlashMode().equals(Camera.Parameters.FLASH_MODE_OFF)){
+			mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+			mCameraFlashButton.setImageResource(R.drawable.camera_flash_auto_selector);
+		}
+		else{ 
+			mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+			mCameraFlashButton.setImageResource(R.drawable.camera_flash_on_selector);
+		}
 	}
 
 	@Override
@@ -474,18 +492,8 @@ public class CaptureImageActivity extends SherlockActivity implements
 			onBackPressed();
 		} 
 		else if (v.getId() == R.id.imageButtonFlash) {
-			if(mCameraView.getFlashMode().equals(Camera.Parameters.FLASH_MODE_ON)){
-				mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-				mCameraFlashButton.setImageResource(R.drawable.camera_flash_off_selector);
-			}
-			else if(mCameraView.getFlashMode().equals(Camera.Parameters.FLASH_MODE_OFF)){
-				mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-				mCameraFlashButton.setImageResource(R.drawable.camera_flash_auto_selector);
-			}
-			else{ 
-				mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-				mCameraFlashButton.setImageResource(R.drawable.camera_flash_on_selector);
-			}
+			Log.d(TAG, "ImageButtonFlash on click flash mode is: " + mCameraView.getFlashMode());
+			handleFlashButtonChange();
 		}
 //		else if (v.getId() == R.id.imageSetting) {
 //
