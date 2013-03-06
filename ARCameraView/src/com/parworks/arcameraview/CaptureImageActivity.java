@@ -109,10 +109,6 @@ Camera.PictureCallback {
 	private SharedPreferences mSharedPreferences;
 	private SharedPreferences.Editor mEditor;
 
-	// Setting button
-	private MenuItem mSettingJpegButton;
-	private MenuItem mSettingPictureSizeButton;
-
 	// progress bar used for augmentation
 	private ProgressDialog progressBar;
 
@@ -177,16 +173,13 @@ Camera.PictureCallback {
 			mCameraView.setOnClickListener(this);
 
 			mCameraImageButton = (ImageButton) findViewById(R.id.imageButtonCamera);
-			mCameraImageButton.setOnClickListener(this);
-			mCameraImageButton.setOnTouchListener(this);
+			mCameraImageButton.setOnClickListener(this);			
 
 			mCameraImageJpegSettingButton = (ImageButton) findViewById(R.id.imageButtonJpeg);
 			mCameraImageJpegSettingButton.setOnClickListener(this);
-			mCameraImageJpegSettingButton.setOnTouchListener(this);
 
 			mCameraImagePicSizeSettingButton = (ImageButton) findViewById(R.id.imageButtonSize);
-			mCameraImagePicSizeSettingButton.setOnClickListener(this);
-			mCameraImagePicSizeSettingButton.setOnTouchListener(this);
+			mCameraImagePicSizeSettingButton.setOnClickListener(this);			
 
 			mCameraExitButton = (ImageButton) findViewById(R.id.imageButtonExit);
 			mCameraExitButton.setOnClickListener(this);
@@ -297,32 +290,6 @@ Camera.PictureCallback {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		setProgressBarIndeterminateVisibility(false);
-		getSupportMenuInflater().inflate(R.menu.activity_capture_image, menu);
-
-		mSettingJpegButton = menu.findItem(R.id.jpegSetting);
-		mSettingJpegButton.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				triggerJpegQualitySelection();
-				return true;
-			}
-		});
-
-		mSettingPictureSizeButton = menu.findItem(R.id.pictureSizeSetting);
-		mSettingPictureSizeButton.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				triggerPictureSizeSelection();
-				return true;
-			}
-		});
-
-		return super.onCreateOptionsMenu(menu);
 	}
 
 	private void triggerJpegQualitySelection() {
