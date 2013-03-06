@@ -38,7 +38,7 @@ public class CameraParameters {
 			.with("config-super-dense", new ImageQuality(-1, 70))
 			.with("config-accurate", new ImageQuality(1024, 50))
 			.with("config-super-accurate", new ImageQuality(1024, 40))
-			.with("default", new ImageQuality(1024, 40)).build();  // TEST OUT THIS
+			.with("default", new ImageQuality(1024, 50)).build();  // TEST OUT THIS
 
 	public static final String[] SUPPORT_PARAMS = { "picture-size",
 			"picture-size-values", "focus-mode", "focus-mode-values",
@@ -103,7 +103,7 @@ public class CameraParameters {
 	private void updateParameters(Map<String, ?> prefsData) {
 
 		focusMode = (String) prefsData.get("focus-mode");
-	//	flashMode = (String) prefsData.get("flash-mode");
+		flashMode = (String) prefsData.get("flash-mode");
 		whiteBalance = (String) prefsData.get("whitebalance");
 		previewSize = parseSize((String) prefsData.get("preview-size"));
 		thumbnailSize = parseSize((String) prefsData.get("thumbnail-size"));

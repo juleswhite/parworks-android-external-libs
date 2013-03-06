@@ -13,28 +13,37 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
         android:background="@drawable/camera_bar_background" >
 
         <ImageButton
-            android:id="@+id/imageButtonExit"
+            android:id="@+id/imageButtonJpeg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:layout_marginRight="20dp"            
+            android:layout_centerHorizontal="true"     
+            android:layout_alignParentTop="true"           
             android:background="@android:color/transparent"
-            android:src="@drawable/camera_x_selector"
+            android:src="@drawable/camera_flash_on_selector"
             tools:ignore="ContentDescription" />
-
+        
+        <ImageButton
+            android:id="@+id/imageButtonSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/imageButtonJpeg"                         
+            android:background="@android:color/transparent"
+            android:src="@drawable/camera_flash_on_selector"
+            tools:ignore="ContentDescription" />
+        
         <ImageButton
             android:id="@+id/imageButtonCamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"            
+            android:layout_centerInParent="true"
             android:background="@drawable/camera_button_selector"
             android:src="@drawable/camera_icon"            
             tools:ignore="ContentDescription" />
@@ -43,12 +52,22 @@
             android:id="@+id/imageButtonFlash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:layout_marginLeft="20dp"            
+            android:layout_centerHorizontal="true"  
+            android:layout_below="@id/imageButtonCamera"                   
             android:background="@android:color/transparent"
             android:src="@drawable/camera_flash_on_selector"
             tools:ignore="ContentDescription" />
-    </LinearLayout>
+                
+        <ImageButton
+            android:id="@+id/imageButtonExit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"     
+            android:layout_alignParentBottom="true"                   
+            android:background="@android:color/transparent"
+            android:src="@drawable/camera_x_selector"
+            tools:ignore="ContentDescription" />
+        
+    </RelativeLayout>
 
 </RelativeLayout>

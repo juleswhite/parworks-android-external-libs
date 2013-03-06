@@ -62,13 +62,13 @@ import com.parworks.arviewer.utils.ImageUtils;
  * @author yusun
  */
 public class CaptureImageActivity extends SherlockActivity implements
-		View.OnClickListener, View.OnTouchListener, Camera.AutoFocusCallback,
-		Camera.PictureCallback {
+View.OnClickListener, View.OnTouchListener, Camera.AutoFocusCallback,
+Camera.PictureCallback {
 
 	private static final String TAG = CaptureImageActivity.class.getName();
 
 	private Context mContext;
-	
+
 	// The attribute name in the intent extra to specify whether to
 	// do augmentation or not
 	public static final String IS_AUGMENT_ATTR = "isAugment";
@@ -89,7 +89,9 @@ public class CaptureImageActivity extends SherlockActivity implements
 	private ImageButton mCameraImageButton;
 	private ImageButton mCameraExitButton;
 	private ImageButton mCameraFlashButton;
-//	private ImageButton mCameraSettingButton;
+	private ImageButton mCameraImageJpegSettingButton;
+	private ImageButton mCameraImagePicSizeSettingButton;
+	//	private ImageButton mCameraSettingButton;
 
 	/** Camera parameters */
 	private Camera mCamera;
@@ -132,19 +134,17 @@ public class CaptureImageActivity extends SherlockActivity implements
 	public static final String SITE_LIST = "site-list";
 
 	/** Called when the activity is first created. */
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		mContext = this;
-		
+
 		// get the target site(s)
 		currentSiteId = getIntent().getExtras().getString(SITE_ID_KEY);
 		currentSiteList = (List<String>) getIntent().getExtras().get(SITE_LIST);
 
-//		site = SitesProvider.get().getSiteInfo(currentSiteId);
-		
 		// init storage for the captured image
 		if (storagePath == null) {
 			storagePath = Environment.getExternalStorageDirectory()
@@ -180,33 +180,31 @@ public class CaptureImageActivity extends SherlockActivity implements
 			mCameraImageButton.setOnClickListener(this);
 			mCameraImageButton.setOnTouchListener(this);
 
-//			mCameraSettingButton = (ImageButton) findViewById(R.id.imageSetting);
-//			mCameraSettingButton.setOnClickListener(this);
-			
+			mCameraImageJpegSettingButton = (ImageButton) findViewById(R.id.imageButtonJpeg);
+			mCameraImageJpegSettingButton.setOnClickListener(this);
+			mCameraImageJpegSettingButton.setOnTouchListener(this);
+
+			mCameraImagePicSizeSettingButton = (ImageButton) findViewById(R.id.imageButtonSize);
+			mCameraImagePicSizeSettingButton.setOnClickListener(this);
+			mCameraImagePicSizeSettingButton.setOnTouchListener(this);
+
 			mCameraExitButton = (ImageButton) findViewById(R.id.imageButtonExit);
 			mCameraExitButton.setOnClickListener(this);
-			
+
 			mCameraFlashButton = (ImageButton) findViewById(R.id.imageButtonFlash);		
 			mCameraFlashButton.setImageResource(R.drawable.camera_flash_auto_selector);			
 			mCameraFlashButton.setOnClickListener(this);
 
-//			this.getSupportActionBar().hide();
-			this.getSupportActionBar().show();
-									
 			mCameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-			
+
 			// Initialize camera parameters
-			mCameraView.setCameraParameters(mCameraParameters); // Just passing
-			// pointer of
-			// camera
-			// parameters,
-			// not updated
-			// yet
+			mCameraView.setCameraParameters(mCameraParameters);
+			cameraInit();
 			
-			
-									
+			// hide action bar
+			this.getSupportActionBar().hide();									
 		}
-		
+
 		// Initialize alert dialog used when augmenting
 		AugmentationAlertDialogListener alertDialogListener = new AugmentationAlertDialogListener();
 		AlertDialog.Builder adb = new AlertDialog.Builder(this);
@@ -342,8 +340,7 @@ public class CaptureImageActivity extends SherlockActivity implements
 		int initSelection = 0;
 		// make default selection
 		for (int i = 0; i < jpegValues.length; i++) {
-			if (jpegValues[i].equals(Integer.toString(mCameraParameters
-					.getJpegQuality()))) {
+			if (jpegValues[i].equals(Integer.toString(mCameraParameters.getJpegQuality()))) {
 				initSelection = i;
 			}
 		}
@@ -419,40 +416,40 @@ public class CaptureImageActivity extends SherlockActivity implements
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+
 		if (Intent.ACTION_SEND.equals(getIntent().getAction())
 				&& getIntent().hasExtra(Intent.EXTRA_STREAM)) {
 			currentImageId = UUID.randomUUID().toString();
 			augmentImageFromShare();
 		} else {
-			// Read preferences
-			mSharedPreferences = PreferenceManager
-					.getDefaultSharedPreferences(this.getApplicationContext());
-			mEditor = mSharedPreferences.edit();
-	
-			// Initialize filename parameters
-			storagePath = Environment.getExternalStorageDirectory()
-					.getAbsolutePath() + "/" + IMAGE_FOLDER;
-	
-			// Update camera parameters
-			mCameraParameters.init(null, isAugment, mSharedPreferences.getAll());
-	
-			// Change hardware preview size and cameraView size according to
-			// camera
-			// parameters
-			Point currPictureSize = mCameraParameters.getPictureSize();
-			if (!prevPictureSize.equals(currPictureSize.x, currPictureSize.y)) {
-				changeCameraViewSize();
-				prevPictureSize.set(currPictureSize.x, currPictureSize.y);
-			}
-	
 			// Enable all the buttons
 			mCameraView = (CameraView) findViewById(R.id.cameraView);
 			mCameraView.setEnabled(true);			
 			mCameraImageButton.setEnabled(true);
 			isCameraViewClicked = false;
-			isCameraImageButtonClicked = false;
-			
+			isCameraImageButtonClicked = false;			
+		}
+	}
+
+	private void cameraInit() {
+		// Read preferences
+		mSharedPreferences = PreferenceManager
+				.getDefaultSharedPreferences(this.getApplicationContext());
+		mEditor = mSharedPreferences.edit();
+
+		// Initialize filename parameters
+		storagePath = Environment.getExternalStorageDirectory()
+				.getAbsolutePath() + "/" + IMAGE_FOLDER;
+
+		// Update camera parameters
+		mCameraParameters.init(null, isAugment, mSharedPreferences.getAll());
+
+		// Change hardware preview size and cameraView size according to
+		// camera parameters
+		Point currPictureSize = mCameraParameters.getPictureSize();
+		if (!prevPictureSize.equals(currPictureSize.x, currPictureSize.y)) {
+			changeCameraViewSize();
+			prevPictureSize.set(currPictureSize.x, currPictureSize.y);
 		}
 	}
 
@@ -461,19 +458,20 @@ public class CaptureImageActivity extends SherlockActivity implements
 		super.onPause();
 		mEditor.commit();
 	}
-	
+
 	private void handleFlashButtonChange() {
-		if(mCameraView.getFlashMode().equals(Camera.Parameters.FLASH_MODE_ON)){
+		if (mCameraView.getFlashMode().equals(Camera.Parameters.FLASH_MODE_AUTO)){
 			mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+			mCameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
 			mCameraFlashButton.setImageResource(R.drawable.camera_flash_off_selector);
-		}
-		else if(mCameraView.getFlashMode().equals(Camera.Parameters.FLASH_MODE_OFF)){
-			mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-			mCameraFlashButton.setImageResource(R.drawable.camera_flash_auto_selector);
-		}
-		else{ 
+		} else if(mCameraView.getFlashMode().equals(Camera.Parameters.FLASH_MODE_OFF)){
 			mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-			mCameraFlashButton.setImageResource(R.drawable.camera_flash_on_selector);
+			mCameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+			mCameraFlashButton.setImageResource(R.drawable.camera_flash_on_selector);			
+		} else {
+			mCameraView.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+			mCameraParameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+			mCameraFlashButton.setImageResource(R.drawable.camera_flash_auto_selector);
 		}
 	}
 
@@ -494,15 +492,13 @@ public class CaptureImageActivity extends SherlockActivity implements
 		else if (v.getId() == R.id.imageButtonFlash) {
 			Log.d(TAG, "ImageButtonFlash on click flash mode is: " + mCameraView.getFlashMode());
 			handleFlashButtonChange();
+		} 
+		else if (v.getId() == R.id.imageButtonJpeg) {
+			triggerJpegQualitySelection();
 		}
-//		else if (v.getId() == R.id.imageSetting) {
-//
-//			if (this.getSupportActionBar().isShowing()) {
-//				this.getSupportActionBar().hide();
-//			} else {
-//				this.getSupportActionBar().show();
-//			}
-//		} 
+		else if (v.getId() == R.id.imageButtonSize) {
+			triggerPictureSizeSelection();
+		} 
 		else if (v.getId() == R.id.imageButtonCamera) {
 			mCameraView.setEnabled(false);
 			mCameraImageButton.setEnabled(false);
@@ -510,8 +506,7 @@ public class CaptureImageActivity extends SherlockActivity implements
 
 			if (mCameraParameters.getFocusMode() != null && 
 					mCameraParameters.getFocusMode().compareTo(Camera.Parameters.FOCUS_MODE_INFINITY) != 0) {
-				mCameraView.autoFocus(this); // this will automatically call
-				// camera.takePicture
+				mCameraView.autoFocus(this); // this will automatically call camera.takePicture
 			} else {
 				mCameraView.takePicture(this, null);
 			}
@@ -576,7 +571,7 @@ public class CaptureImageActivity extends SherlockActivity implements
 			}
 
 			mCamera = camera;
-			
+
 			// confirm augmentation when needed
 			if (isAugment) {
 				alertDialog.show();
@@ -631,7 +626,7 @@ public class CaptureImageActivity extends SherlockActivity implements
 		// Create an ArrayAdapter using the string array and a default spinner
 		// layout
 
-		
+
 		// List<String> sites = SitesProvider.get().getCachedSiteIds();
 
 		//		List<String> sites = new ArrayList<String>();
@@ -643,13 +638,13 @@ public class CaptureImageActivity extends SherlockActivity implements
 		//		sites.add("AK2");
 		//		sites.add("AK3");
 
-//		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-//				CaptureImageActivity.this,
-//				android.R.layout.simple_spinner_dropdown_item, sites);
-//		// Specify the layout to use when the list of choices appears
-//		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//		// Apply the adapter to the spinner
-//		spinner.setAdapter(adapter);
+		//		ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+		//				CaptureImageActivity.this,
+		//				android.R.layout.simple_spinner_dropdown_item, sites);
+		//		// Specify the layout to use when the list of choices appears
+		//		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		//		// Apply the adapter to the spinner
+		//		spinner.setAdapter(adapter);
 
 		about.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			@Override
