@@ -83,6 +83,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
+		Log.d(TAG, "surfaceCreated");
 		mCamera = Camera.open();
 		mCamera.setDisplayOrientation(90);
 		if (mCamera != null) {
@@ -99,6 +100,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
+		Log.d(TAG,"surfaceChanged");
 		if (mCamera != null) {
 			updateParameter();
 			mCamera.startPreview();
@@ -138,6 +140,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
+		Log.d(TAG,"surfaceDestroyed");
 		if (mCamera != null) {
 			mCamera.stopPreview();
 			mCamera.release();
@@ -168,7 +171,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
 	public void setFlashMode(String flashMode) {
 		mCameraParameters.setFlashMode(flashMode);
-		updateParameter();
+//		updateParameter();
+		Log.d(TAG,"SetFlashMode: updateParameter() call is commented out.");
 	}
 
 	public String getFlashMode() {
@@ -206,10 +210,11 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public void onLayout(boolean changed, int left, int top, int right,
 			int bottom) {
-		if (changed) {
-			(this).layout(0, 0, viewWidth, viewHeight);
-			needsLayout = false;
-		}
+		Log.d(TAG,"onLayout");
+//		if (changed) {
+//			(this).layout(0, 0, viewWidth, viewHeight);
+//			needsLayout = false;
+//		}
 	}
 
 }
