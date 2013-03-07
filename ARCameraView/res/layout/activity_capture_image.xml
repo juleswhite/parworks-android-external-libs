@@ -27,7 +27,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:src="@drawable/camera_flash_on_selector"
+            android:src="@drawable/camera_quality_selector"
             tools:ignore="ContentDescription" />
 
         <ImageButton
@@ -37,7 +37,7 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:src="@drawable/camera_flash_on_selector"
+            android:src="@drawable/camera_picsize_selector"
             tools:ignore="ContentDescription" />
     </LinearLayout>
 
