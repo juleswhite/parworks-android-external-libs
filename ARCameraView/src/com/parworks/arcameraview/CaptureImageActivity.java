@@ -818,7 +818,7 @@ Camera.PictureCallback {
 					} else {
 						Toast.makeText(
 								CaptureImageActivity.this,
-								"Nothing to augment for this image. Try again.",
+								"Nothing to augment for this image. Please try again.",
 								Toast.LENGTH_LONG).show();
 						resetCamera();
 					}
@@ -827,8 +827,11 @@ Camera.PictureCallback {
 				@Override
 				public void handleError(Exception error) {
 					Log.w(TAG,
-							"Failed to augment the image: "
-									+ error.getMessage());
+							"Failed to augment the image: " + error);
+					Toast.makeText(
+							CaptureImageActivity.this,
+							"Nothing to augment for this image. Please try again.",
+							Toast.LENGTH_LONG).show();
 					progressBar.dismiss();
 					resetCamera();
 				}
