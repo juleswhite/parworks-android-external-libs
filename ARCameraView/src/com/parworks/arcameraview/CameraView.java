@@ -54,6 +54,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	public void updateParameter() {
+		if (mCamera == null) return;
+		
 		Point pictureSize = mCameraParameters.getPictureSize();
 		int jpegQuality = mCameraParameters.getJpegQuality();
 		String focusMode = mCameraParameters.getFocusMode();
