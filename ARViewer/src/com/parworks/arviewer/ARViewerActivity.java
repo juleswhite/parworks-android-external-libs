@@ -670,7 +670,7 @@ public class ARViewerActivity extends SherlockActivity implements View.OnClickLi
 		super.finish();
 		if (this.imageBitmap != null) {
 			Log.d(TAG, "recycling the bitmap");
-			this.imageBitmap.recycle();
+			//this.imageBitmap.recycle();
 		}
 	}	
 }

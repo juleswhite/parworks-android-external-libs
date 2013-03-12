@@ -34,8 +34,9 @@ public class ARImageView extends ImageView {
 		super.onDraw(canvas);
 		canvas.save();
 		canvas.scale(scaleFactor, scaleFactor);
-		canvas.translate(translate.x, translate.y);
-		canvas.drawBitmap(imageBitmap, getMatrix(), null);
+		canvas.translate(translate.x, translate.y);		
+		//canvas.drawBitmap(imageBitmap, null, null);
+		canvas.drawBitmap(imageBitmap, 0, 0, null);
 		canvas.restore();
 	}
 	
@@ -48,10 +49,9 @@ public class ARImageView extends ImageView {
 		double bitmapRatio = ((double) imageBitmap.getWidth()) / imageBitmap.getHeight();
 		double imageViewRatio = 0;
 		
-		if(getWidth() > 0){
+		if (getWidth() > 0) {
 			imageViewRatio = ((double) getWidth()) / getHeight();
-		}
-		else {
+		} else {
 			Display d = getTheDisplay();
 			imageViewRatio = ((double)d.getWidth()) / d.getHeight();
 		}
