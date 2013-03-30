@@ -27,37 +27,42 @@ import com.parworks.androidlibrary.response.OverlayCover.OverlayCoverType;
 public class OverlayViewFactory {
 
 	public class RectangleCreator implements OverlayViewCreator {
-		
+
 		@SuppressWarnings("deprecation")
 		@Override
 		public void createOverlayView(Activity context,
-				OverlayView overlayview, ImageOverlayInfo overlay, boolean showpopup, boolean showFadeAnimation) {
-			
+				OverlayView overlayview, ImageOverlayInfo overlay,
+				boolean showpopup, boolean showFadeAnimation) {
+
 			// setup the boundary
-			ImageView view = new ImageView(context);			
+			ImageView view = new ImageView(context);
 			view.setBackgroundDrawable(new OverlayCoverView(overlay));
 			if (showFadeAnimation) {
-				Animation myFadeInAnimation = AnimationUtils.loadAnimation(context,	R.anim.pulsate);
+				Animation myFadeInAnimation = AnimationUtils.loadAnimation(
+						context, R.anim.pulsate);
 				view.startAnimation(myFadeInAnimation);
 			}
-			
+
 			// setting this to be invisible helps to hide the animition process
-			view.setVisibility(View.INVISIBLE); 
-			
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(200, 200);
+			view.setVisibility(View.INVISIBLE);
+
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+					200, 200);
 			overlayview.addOverlay(overlay, view, params);
 
 			// retrieve the overlay title
 			String popupcon = overlay.getConfiguration().getTitle();
 			// show the title popup only when it is specified
 			if (showpopup && popupcon != null && !TextUtils.isEmpty(popupcon)) {
-				View pop = context.getLayoutInflater().inflate(R.layout.popup, null);
-				((TextView)pop.findViewById(R.id.arPopupContent)).setText(popupcon);
+				View pop = context.getLayoutInflater().inflate(R.layout.popup,
+						null);
+				((TextView) pop.findViewById(R.id.arPopupContent))
+						.setText(popupcon);
 
 				// potential format configuration for text here
-				//pop.setBackgroundResource(R.drawable.popup);
-				//pop.setText(overlay.getContent());
-				//pop.setTextSize(24);
+				// pop.setBackgroundResource(R.drawable.popup);
+				// pop.setText(overlay.getContent());
+				// pop.setTextSize(24);
 
 				overlayview.setPopup(overlay, view, pop);
 			}
@@ -65,20 +70,22 @@ public class OverlayViewFactory {
 	}
 
 	public class ImageCreator implements OverlayViewCreator {
-		
+
 		@SuppressWarnings("deprecation")
 		@Override
 		public void createOverlayView(Activity context,
-				OverlayView overlayview, ImageOverlayInfo overlay, boolean showpopup, boolean showFadeAnimation) {
+				OverlayView overlayview, ImageOverlayInfo overlay,
+				boolean showpopup, boolean showFadeAnimation) {
 
 			ImageView view = new ImageView(context);
 			view.setAdjustViewBounds(true);
 			view.setScaleType(ScaleType.FIT_XY);
 			view.setBackgroundDrawable(new OverlayCoverView(overlay));
-			
+
 			String imgres = overlay.getConfiguration().getCover().getProvider();
 			if (imgres.startsWith("http")) {
-				UrlImageViewHelper.setUrlDrawable(view, imgres, android.R.drawable.spinner_background);
+				UrlImageViewHelper.setUrlDrawable(view, imgres,
+						android.R.drawable.spinner_background);
 			} else {
 				// TODO: To support image file path URI e.g., file:///
 				int res = context.getResources().getIdentifier(imgres,
@@ -86,29 +93,37 @@ public class OverlayViewFactory {
 				view.setImageResource(res);
 			}
 
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+			RelativeLayout.LayoutParams params = null;
+			if (imgres.endsWith("no-scale")) {
+				params = new RelativeLayout.LayoutParams(
+						LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			} else {
+				params = new RelativeLayout.LayoutParams(
+						LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+			}
 			overlayview.addOverlay(overlay, view, params);
 
 			// retrieve the overlay title
 			String popupcon = overlay.getConfiguration().getTitle();
 			// show the title popup only when it is specified
 			if (showpopup && popupcon != null && !TextUtils.isEmpty(popupcon)) {
-				View pop = context.getLayoutInflater().inflate(R.layout.popup, null);
-				((TextView)pop.findViewById(R.id.arPopupContent)).setText(popupcon);
+				View pop = context.getLayoutInflater().inflate(R.layout.popup,
+						null);
+				((TextView) pop.findViewById(R.id.arPopupContent))
+						.setText(popupcon);
 
 				// potential format configuration for text here
-				//pop.setBackgroundResource(R.drawable.popup);
-				//pop.setText(overlay.getContent());
-				//pop.setTextSize(24);
+				// pop.setBackgroundResource(R.drawable.popup);
+				// pop.setText(overlay.getContent());
+				// pop.setTextSize(24);
 
 				overlayview.setPopup(overlay, view, pop);
 			}
 		}
 	}
-	
-	private Map<OverlayCoverType, OverlayViewCreator> mCreators = 
-			new EnumMap<OverlayCoverType, OverlayViewCreator>(OverlayCoverType.class);
+
+	private Map<OverlayCoverType, OverlayViewCreator> mCreators = new EnumMap<OverlayCoverType, OverlayViewCreator>(
+			OverlayCoverType.class);
 
 	public OverlayViewFactory() {
 		RectangleCreator rect = new RectangleCreator();
@@ -118,17 +133,18 @@ public class OverlayViewFactory {
 	}
 
 	public void createOverlayView(Activity context, OverlayView overlayview,
-			ImageOverlayInfo overlay, float xscale, float yscale, ImageMetrics metrics, 
-			boolean showpopup, boolean showFadeAnimation) {
+			ImageOverlayInfo overlay, float xscale, float yscale,
+			ImageMetrics metrics, boolean showpopup, boolean showFadeAnimation) {
 
 		overlayview.setImageMetrics(metrics);
 		overlayview.setOverlayScale(xscale, yscale);
 
 		// initialize the right overlay view based on the type
-		OverlayViewCreator creator = mCreators.get(
-				overlay.getConfiguration().getCover().getOverlayCoverType());
+		OverlayViewCreator creator = mCreators.get(overlay.getConfiguration()
+				.getCover().getOverlayCoverType());
 		if (creator != null) {
-			creator.createOverlayView(context, overlayview, overlay, showpopup, showFadeAnimation);
+			creator.createOverlayView(context, overlayview, overlay, showpopup,
+					showFadeAnimation);
 		}
 	}
 }

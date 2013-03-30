@@ -21,7 +21,10 @@ import android.view.animation.Transformation;
 import android.widget.RelativeLayout;
 
 import com.parworks.androidlibrary.response.ImageOverlayInfo;
+import com.parworks.androidlibrary.response.OverlayContent;
+import com.parworks.androidlibrary.response.OverlayCover;
 import com.parworks.androidlibrary.response.OverlayPoint;
+import com.parworks.androidlibrary.response.OverlayCover.OverlayCoverType;
 
 public class OverlayView extends RelativeLayout {
 
@@ -54,14 +57,98 @@ public class OverlayView extends RelativeLayout {
 		}
 	}
 
-	public class OverlayTransform extends Transformation {
+	public class CentroidTransformationAnimation extends Animation {
+
+		private View child_;
+
+		public CentroidTransformationAnimation(View child) {
+			super();
+			child_ = child;
+			setRepeatMode(Animation.INFINITE);
+		}
+
+		@Override
+		public boolean getTransformation(long currentTime,
+				Transformation outTransformation) {
+			outTransformation.set(OverlayView.this.getTransformation(child_));
+			return true;
+		}
+	}
+	
+	public interface OverlayTransform {
+		public float[] getDestination();
+	}
+
+	public class OverlayCentroidTransform extends Transformation implements OverlayTransform {
 
 		private Matrix mMatrix;
 
 		private float[] mDestination;
 
-		public OverlayTransform(ImageOverlayInfo overlay, float xscale, float yscale, int w,
-				int h, int iw, int ih) {
+		public OverlayCentroidTransform(ImageOverlayInfo overlay, float xscale,
+				float yscale, int w, int h, int iw, int ih) {
+
+			OverlayPoint p1 = overlay.getPoints().get(0);
+			OverlayPoint p2 = overlay.getPoints().get(1);
+			OverlayPoint p3 = overlay.getPoints().get(2);
+
+			String offstr  = overlay.getConfiguration().getCover().getProvider();
+			int s = offstr.indexOf("#offset[");
+			int e = offstr.indexOf("]",s);
+			offstr = offstr.substring(s+8,e);
+			String[] off = offstr.split(",");
+			int xoff = Integer.parseInt(off[0]);
+			int yoff = Integer.parseInt(off[1]);
+			
+			// TODO: The current transformation does not
+			// work well for Overlays with 3 points or
+			// more than 4 points.
+			// The following code only avoids NullPointerExcpetion
+			// when there are only 3 overlay points, but does not
+			// solve the actual display problem
+			OverlayPoint p4 = new OverlayPoint();
+			if (overlay.getPoints().size() > 3) {
+				p4 = overlay.getPoints().get(3);
+			}
+
+			float x = (p1.getX() + p2.getX() + p3.getX() + p4.getX()) / 4;
+			float y = (p1.getY() + p2.getY() + p3.getY() + p4.getY()) / 4;
+			x = x * xscale;
+			y = y * yscale;
+
+			float[] topleft = { x - (w / 2) + (iw / 2) + xoff, y - (h / 2) + (ih / 2) + yoff};
+
+			float[] dst2 = { topleft[0], topleft[1], topleft[0] + w,
+					topleft[1], topleft[0] + w, topleft[1] + h, topleft[0],
+					topleft[1] + h };
+
+			Matrix matrix2 = new Matrix();
+			float[] src2 = new float[] { 0, 0, w, 0, w, h, 0, h };
+
+			mDestination = dst2;
+			matrix2.setPolyToPoly(src2, 0, dst2, 0, src2.length >> 1);
+			mMatrix = matrix2;
+		}
+
+		public float[] getDestination() {
+			return mDestination;
+		}
+
+		@Override
+		public Matrix getMatrix() {
+			return mMatrix;
+		}
+
+	}
+
+	public class OverlaySkewTransform extends Transformation implements OverlayTransform{
+
+		private Matrix mMatrix;
+
+		private float[] mDestination;
+
+		public OverlaySkewTransform(ImageOverlayInfo overlay, float xscale,
+				float yscale, int w, int h, int iw, int ih) {
 
 			OverlayPoint p1 = overlay.getPoints().get(0);
 			OverlayPoint p2 = overlay.getPoints().get(1);
@@ -82,11 +169,11 @@ public class OverlayView extends RelativeLayout {
 			int xdelta = iw / 2;
 			Matrix matrix2 = new Matrix();
 			float[] src2 = new float[] { 0, 0, w, 0, w, h, 0, h };
-			float[] dst2 = new float[] { 
-					xdelta + p1.getX() * xscale,	ydelta + p1.getY() * yscale, 
-					xdelta + p2.getX() * xscale,	ydelta + p2.getY() * yscale, 
-					xdelta + p3.getX() * xscale,	ydelta + p3.getY() * yscale, 
-					xdelta + p4.getX() * xscale,	ydelta + p4.getY() * yscale };
+			float[] dst2 = new float[] { xdelta + p1.getX() * xscale,
+					ydelta + p1.getY() * yscale, xdelta + p2.getX() * xscale,
+					ydelta + p2.getY() * yscale, xdelta + p3.getX() * xscale,
+					ydelta + p3.getY() * yscale, xdelta + p4.getX() * xscale,
+					ydelta + p4.getY() * yscale };
 
 			mDestination = dst2;
 			matrix2.setPolyToPoly(src2, 0, dst2, 0, src2.length >> 1);
@@ -95,40 +182,6 @@ public class OverlayView extends RelativeLayout {
 
 		public float[] getDestination() {
 			return mDestination;
-		}
-
-		public int[] getBitmapOffset(int w, int h, int bw, int bh) {
-			double bitmapRatio = ((double) bw) / bh;
-			double imageViewRatio = ((double) w) / h;
-
-			double drawLeft, drawTop, drawHeight, drawWidth = 0;
-
-			if (bitmapRatio > imageViewRatio) {
-				drawLeft = 0;
-			} else {
-				drawTop = 0;
-			}
-
-			if (bitmapRatio > imageViewRatio) {
-				drawLeft = 0;
-				drawHeight = (imageViewRatio / bitmapRatio) * h;
-			} else {
-				drawTop = 0;
-				drawWidth = (bitmapRatio / imageViewRatio) * w;
-			}
-
-			if (bitmapRatio > imageViewRatio) {
-				drawLeft = 0;
-				drawHeight = (imageViewRatio / bitmapRatio) * h;
-				drawTop = (h - drawHeight) / 2;
-			} else {
-				drawTop = 0;
-				drawWidth = (bitmapRatio / imageViewRatio) * w;
-				drawLeft = (w - drawWidth) / 2;
-			}
-
-			return new int[] { (int) Math.rint(drawLeft),
-					(int) Math.rint(drawTop) };
 		}
 
 		@Override
@@ -195,20 +248,20 @@ public class OverlayView extends RelativeLayout {
 
 	public OverlayView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		//setStaticTransformationsEnabled(true);
+		// setStaticTransformationsEnabled(true);
 	}
 
 	public OverlayView(Context context) {
 		super(context);
-		//setStaticTransformationsEnabled(true);
+		// setStaticTransformationsEnabled(true);
 	}
 
 	public void addOverlay(ImageOverlayInfo overlay, final View v,
 			RelativeLayout.LayoutParams params) {
 		mViewOverlays.put(v, overlay);
-		
-		Animation a = new TransformationAnimation(v);		
-		
+
+		Animation a = new TransformationAnimation(v);
+
 		Animation existing = v.getAnimation();
 		if (existing != null) {
 			if (existing instanceof AnimationSet) {
@@ -252,12 +305,24 @@ public class OverlayView extends RelativeLayout {
 		if (vt == null) {
 			ImageOverlayInfo i = mViewOverlays.get(child);
 			if (i != null) {
-				int[] offs = new int[]{0, 0}; 
+
+				int[] offs = new int[] { 0, 0 };
 				if (mImageMetrics != null) {
 					offs = mImageMetrics.getFullSizeImageOffset();
 				}
-				vt = new OverlayTransform(i, mXScale, mYScale, child.getWidth(),
-						child.getHeight(), offs[0], offs[1]);
+
+				OverlayCover content = i.getConfiguration().getCover();
+				if (content.getType().equalsIgnoreCase("IMAGE")
+						&& content.getProvider().endsWith("#no-scale")) {
+					vt = new OverlayCentroidTransform(i, mXScale, mYScale,
+							child.getWidth(), child.getHeight(), offs[0],
+							offs[1]);
+				} else {
+					vt = new OverlaySkewTransform(i, mXScale, mYScale,
+							child.getWidth(), child.getHeight(), offs[0],
+							offs[1]);
+				}
+
 				mTransforms.put(child, vt);
 
 				View pop = mPopups.get(child);
