@@ -12,6 +12,7 @@ import java.util.Map;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -28,6 +29,8 @@ import com.parworks.androidlibrary.response.OverlayCover.OverlayCoverType;
 
 public class OverlayView extends RelativeLayout {
 
+	private static final String TAG = OverlayView.class.getName();
+	
 	public static class OverlayPopupAnimation extends Animation {
 
 		public OverlayPopupAnimation() {
@@ -74,12 +77,13 @@ public class OverlayView extends RelativeLayout {
 			return true;
 		}
 	}
-	
+
 	public interface OverlayTransform {
 		public float[] getDestination();
 	}
 
-	public class OverlayCentroidTransform extends Transformation implements OverlayTransform {
+	public class OverlayCentroidTransform extends Transformation implements
+			OverlayTransform {
 
 		private Matrix mMatrix;
 
@@ -92,14 +96,7 @@ public class OverlayView extends RelativeLayout {
 			OverlayPoint p2 = overlay.getPoints().get(1);
 			OverlayPoint p3 = overlay.getPoints().get(2);
 
-			String offstr  = overlay.getConfiguration().getCover().getProvider();
-			int s = offstr.indexOf("#offset[");
-			int e = offstr.indexOf("]",s);
-			offstr = offstr.substring(s+8,e);
-			String[] off = offstr.split(",");
-			int xoff = Integer.parseInt(off[0]);
-			int yoff = Integer.parseInt(off[1]);
-			
+			int[] offs = getOverlayImageOffset(overlay);
 			// TODO: The current transformation does not
 			// work well for Overlays with 3 points or
 			// more than 4 points.
@@ -110,13 +107,18 @@ public class OverlayView extends RelativeLayout {
 			if (overlay.getPoints().size() > 3) {
 				p4 = overlay.getPoints().get(3);
 			}
+			
+			float scale = getOverlayImageScale(overlay);
+			w = (int)Math.rint(scale * w);
+			h = (int)Math.rint(scale * h);
 
 			float x = (p1.getX() + p2.getX() + p3.getX() + p4.getX()) / 4;
 			float y = (p1.getY() + p2.getY() + p3.getY() + p4.getY()) / 4;
 			x = x * xscale;
 			y = y * yscale;
 
-			float[] topleft = { x - (w / 2) + (iw / 2) + xoff, y - (h / 2) + (ih / 2) + yoff};
+			float[] topleft = { x - (w / 2) + (iw / 2) + offs[0],
+					y - (h / 2) + (ih / 2) + offs[1] };
 
 			float[] dst2 = { topleft[0], topleft[1], topleft[0] + w,
 					topleft[1], topleft[0] + w, topleft[1] + h, topleft[0],
@@ -130,6 +132,37 @@ public class OverlayView extends RelativeLayout {
 			mMatrix = matrix2;
 		}
 
+		private float getOverlayImageScale(ImageOverlayInfo overlay) {
+			String scalestr = getProviderParam(overlay, "scale");
+
+			float scale = 1.0f;
+
+			try {
+				if (scalestr != null) {
+					scale = Float.parseFloat(scalestr);
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Malformed cover image scale spec", e);
+			}
+			return scale;
+		}
+
+		private int[] getOverlayImageOffset(ImageOverlayInfo overlay) {
+			int[] offs = new int[2];
+
+			String offstr = getProviderParam(overlay, "offset");
+			try {
+				if (offstr != null) {
+					String[] off = offstr.split(",");
+					offs[0] = Integer.parseInt(off[0]);
+					offs[1] = Integer.parseInt(off[1]);
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Malformed cover image offset spec", e);
+			}
+			return offs;
+		}
+
 		public float[] getDestination() {
 			return mDestination;
 		}
@@ -141,7 +174,8 @@ public class OverlayView extends RelativeLayout {
 
 	}
 
-	public class OverlaySkewTransform extends Transformation implements OverlayTransform{
+	public class OverlaySkewTransform extends Transformation implements
+			OverlayTransform {
 
 		private Matrix mMatrix;
 
@@ -336,6 +370,34 @@ public class OverlayView extends RelativeLayout {
 		}
 
 		return vt;
+	}
+	
+	public static String removeProviderParam(ImageOverlayInfo overlay, String param) {
+		String offstr = overlay.getConfiguration().getCover().getProvider();
+
+		String value = null;
+		String start = "#" + param + "[";
+		String end = "]";
+		if (offstr.indexOf(start) > -1) {
+			int s = offstr.indexOf(start);
+			int e = offstr.indexOf(end, s);
+			value = offstr.substring(0,s) + offstr.substring(e+1);
+		}
+		return value;
+	}
+	
+	public static String getProviderParam(ImageOverlayInfo overlay, String param) {
+		String offstr = overlay.getConfiguration().getCover().getProvider();
+
+		String value = null;
+		String start = "#" + param + "[";
+		String end = "]";
+		if (offstr.indexOf(start) > -1) {
+			int s = offstr.indexOf(start);
+			int e = offstr.indexOf(end, s);
+			value = offstr.substring(s + start.length(), e);
+		}
+		return value;
 	}
 
 	@Override
