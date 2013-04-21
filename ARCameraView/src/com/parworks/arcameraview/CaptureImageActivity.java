@@ -41,13 +41,11 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 import com.parworks.androidlibrary.ar.ARErrorListener;
 import com.parworks.androidlibrary.ar.ARListener;
 import com.parworks.androidlibrary.ar.ARSite;
 import com.parworks.androidlibrary.ar.AugmentedData;
+import com.parworks.androidlibrary.ar.Overlay;
 import com.parworks.arviewer.ARViewerActivity;
 import com.parworks.arviewer.utils.ImageUtils;
 
@@ -123,6 +121,9 @@ Camera.PictureCallback {
 
 	/** Multiple sites can be provided for augmentation */
 	private List<String> currentSiteList;
+	
+	// Only for GPS Demo app
+	private List<String> overlayListToRemove;
 
 	//private SiteInfo site;
 
@@ -140,6 +141,8 @@ Camera.PictureCallback {
 		// get the target site(s)
 		currentSiteId = getIntent().getExtras().getString(SITE_ID_KEY);
 		currentSiteList = (List<String>) getIntent().getExtras().get(SITE_LIST);
+		
+		// overlayListToRemove = (List<String>) getIntent().getExtras().get("overlay-list");
 
 		// init storage for the captured image
 		if (storagePath == null) {
@@ -473,7 +476,8 @@ Camera.PictureCallback {
 
 			if (mCameraParameters.getFocusMode() != null && 
 					mCameraParameters.getFocusMode().compareTo(Camera.Parameters.FOCUS_MODE_INFINITY) != 0) {
-				mCameraView.autoFocus(this); // this will automatically call camera.takePicture
+			    mCameraView.autoFocus(this); // this will automatically call camera.takePicture
+				//mCameraView.takePicture(this, null);
 			} else {
 				mCameraView.takePicture(this, null);
 			}
@@ -541,7 +545,12 @@ Camera.PictureCallback {
 
 			// confirm augmentation when needed
 			if (isAugment) {
-				alertDialog.show();
+				// alertDialog.show();
+				if (currentSiteList != null && currentSiteList.size() > 0) {
+					augmentMultiple();
+				} else {
+					augmentImage();
+				}
 			} else {				
 				resetCamera();
 			}
@@ -802,6 +811,16 @@ Camera.PictureCallback {
 					Log.i(TAG, "Localization: " + resp.isLocalization());
 					Log.i(TAG, "Augmented overlays: "
 							+ resp.getOverlays().size());
+					
+//					// just for GPS selection demo
+//					List<Overlay> toRemove = new ArrayList<Overlay>();
+//					for(Overlay overlay : resp.getOverlays()) {
+//						if (overlayListToRemove.contains(overlay.getName())) {
+//							toRemove.add(overlay);
+//						}
+//					}
+//					resp.getOverlays().removeAll(toRemove);
+					
 
 					progressBar.dismiss();
 					if (resp.isLocalization()) {
